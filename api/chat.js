@@ -1,7 +1,20 @@
 export default async function handler(req, res) {
+  // 1️⃣ Handle preflight OPTIONS request
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.status(200).end();
+    return;
+  }
+
+  // 2️⃣ Only allow POST
   if (req.method !== "POST") {
+    res.setHeader("Access-Control-Allow-Origin", "*"); // still needed
     return res.status(405).json({ error: "Method not allowed" });
   }
+
+  res.setHeader("Access-Control-Allow-Origin", "*"); // allow Framer to connect
 
   const { message } = req.body;
 
