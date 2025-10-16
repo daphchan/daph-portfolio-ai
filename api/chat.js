@@ -1,20 +1,18 @@
 export default async function handler(req, res) {
-  // 1️⃣ Handle preflight OPTIONS request
+  // Always allow cross-origin
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+
+  // Handle preflight OPTIONS request
   if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
-  // 2️⃣ Only allow POST
+  // Only allow POST requests
   if (req.method !== "POST") {
-    res.setHeader("Access-Control-Allow-Origin", "*"); // still needed
     return res.status(405).json({ error: "Method not allowed" });
   }
-
-  res.setHeader("Access-Control-Allow-Origin", "*"); // allow Framer to connect
 
   const { message } = req.body;
 
@@ -28,7 +26,10 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages: [
-          { role: "system", content: "You are Daphanie’s friendly AI portfolio assistant. Keep responses concise, friendly, and focused on Daphanie’s design work and experience." },
+          {
+            role: "system",
+            content: "You are Daphanie’s friendly AI portfolio assistant. Keep responses concise and friendly."
+          },
           { role: "user", content: message }
         ],
       }),
