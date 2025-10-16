@@ -1,20 +1,18 @@
 export default async function handler(req, res) {
-  // ---- 1️⃣ Handle preflight OPTIONS request ----
+  // 1️⃣ Always allow cross-origin requests from any domain
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+
+  // 2️⃣ Handle preflight OPTIONS request
   if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", "*"); // allow all websites
-    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS"); // allow POST
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type"); // allow JSON
-    return res.status(200).end(); // end OPTIONS request
+    return res.status(200).end();
   }
 
-  // ---- 2️⃣ Only allow POST requests ----
+  // 3️⃣ Only allow POST requests
   if (req.method !== "POST") {
-    res.setHeader("Access-Control-Allow-Origin", "*"); // still allow cross-origin
     return res.status(405).json({ error: "Method not allowed" });
   }
-
-  // ---- 3️⃣ Add CORS header for actual POST response ----
-  res.setHeader("Access-Control-Allow-Origin", "*");
 
   const { message } = req.body;
 
@@ -30,7 +28,7 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: "You are Daphanie’s friendly AI portfolio assistant. Keep responses concise, friendly, and focused on Daphanie’s design work and experience."
+            content: "You are Daphanie’s friendly AI portfolio assistant. Keep responses concise and friendly."
           },
           { role: "user", content: message }
         ],
